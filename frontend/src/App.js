@@ -13,6 +13,8 @@ function App() {
     deleteItem,
     updateItem,
     fetchItems,
+    downloadPdf,
+    downloadExcel,
     search,
     setSearch,
     page,
@@ -62,10 +64,41 @@ function App() {
     }
   };
 
+  const handleDownloadPDF = async () => {
+    try {
+      const pdfBlob = await downloadPdf();
+
+      const url = window.URL.createObjectURL(pdfBlob);
+      const a = document.createElement("a");
+
+      a.href = url;
+      a.download = "ListItems.pdf";
+      a.click();
+      a.remove();
+
+      toast.success("PDF downloaded!");
+    } catch {
+      toast.error("Error downloading item!");
+    }
+  };
+
+  const handleDownloadEXEL = async () => {
+    try {
+      const blob = await downloadExcel();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "items.xlsx";
+      a.click();
+      toast.success("EXEL downloaded!");
+    } catch {
+      toast.error("Error downloading item!");
+    }
+  }
+
   return (
     <div className="app">
       <h1 className="app__title">CRUD App</h1>
-      <p>Ovo je da nesto probam</p>
       <div className="filter">
         <input
           placeholder="Search..."
@@ -76,6 +109,10 @@ function App() {
         <button onClick={() => setOpen(true)} className="filter__button">
           Add
         </button>
+        <button onClick={handleDownloadPDF} className="filter__button">
+          PDF
+        </button>
+        <button onClick={handleDownloadEXEL} className="filter__button">EXEL</button>
       </div>
       {open && (
         <div className="modal">

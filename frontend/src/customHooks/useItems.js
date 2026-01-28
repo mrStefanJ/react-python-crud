@@ -12,32 +12,30 @@ export const useItems = () => {
   const [total, setTotal] = useState(0);
 
   const fetchItems = useCallback(async () => {
-  setLoading(true);
+    setLoading(true);
 
-  try {
-    // Poziv API-ja sa parametrima za paginaciju i search
-    const { data } = await axios.get(API_URL, {
-      params: {
-        skip: page * limit,
-        limit,
-        search,
-      },
-    });
+    try {
+      // Poziv API-ja sa parametrima za paginaciju i search
+      const { data } = await axios.get(API_URL, {
+        params: {
+          skip: page * limit,
+          limit,
+          search,
+        },
+      });
 
-    // data = { items: [...], total: X }
-    const { items: fetchedItems, total: fetchedTotal } = data;
+      // data = { items: [...], total: X }
+      const { items: fetchedItems, total: fetchedTotal } = data;
 
-    // Postavljanje state-a
-    setItems(fetchedItems);
-    setTotal(fetchedTotal);
+      // Postavljanje state-a
+      setItems(fetchedItems);
+      setTotal(fetchedTotal);
+    } catch (err) {
+      console.error("Error fetching items:", err);
+    }
 
-  } catch (err) {
-    console.error("Error fetching items:", err);
-  }
-
-  setLoading(false);
-}, [page, limit, search]);
-
+    setLoading(false);
+  }, [page, limit, search]);
 
   useEffect(() => {
     fetchItems();
@@ -58,6 +56,20 @@ export const useItems = () => {
     return res.data;
   };
 
+  const downloadPdf = async () => {
+    const res = await axios.get(`${API_URL}download/pdf`, {
+      responseType: "blob",
+    });
+    return new Blob([res.data], { type: "application/pdf" });
+  };
+
+  const downloadExcel = async () => {
+    const res = await axios.get(`${API_URL}download/excel`, {
+      responseType: "blob",
+    });
+    return res.data;
+  };
+
   return {
     items,
     total,
@@ -66,6 +78,8 @@ export const useItems = () => {
     createItem,
     updateItem,
     deleteItem,
+    downloadPdf,
+    downloadExcel,
     search,
     setSearch,
     page,
